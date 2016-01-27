@@ -79,7 +79,12 @@ zc.lockfile==1.1.0
     "URL_get_runs_by_status": "http://localhost:8000/seq-config/run/get_runs_by_status",
     "URL_set_run_status": "http://localhost:8000/seq-config/run/set_run_status",
     "URL_get_library_status": "http://localhost:8000/seq-config/library/get_library_status"
-  }
+  },
+  "qc": {
+    "dir": "QC",
+    "fastqc": "/path/to/fastqc/bin",
+    "java": "/path/to/bin/java",
+    "server": "server.edu:/path/to/rsync/location/
 }
 ```
 
