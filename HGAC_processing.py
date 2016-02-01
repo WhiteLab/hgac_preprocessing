@@ -1,11 +1,11 @@
 import glob
-import os
-import socket
-import sys
-import subprocess
-import multiprocessing
-import re
 import json
+import multiprocessing
+import os
+import re
+import socket
+import subprocess
+import sys
 
 import requests
 
@@ -97,13 +97,13 @@ def generate_support_files(run_config=None, config=None, lanes=None, path=None):
         sample_sheet = open(sample_sheet_path, 'w')
         config_file = open(config_file_path, 'w')
     except:
-        print >>sys.stderr, "ERROR: Unable to open {}, or {} for writing.".format(
+        print >> sys.stderr, "ERROR: Unable to open {}, or {} for writing.".format(
             sample_sheet_path, config_file_path
         )
         raise
 
     # SampleSheet.csv header
-    print >>sample_sheet, "FCID,Lane,SampleID,SampleRef,Index,Description,Control,Recipe,Operator,SampleProject"
+    print >> sample_sheet, "FCID,Lane,SampleID,SampleRef,Index,Description,Control,Recipe,Operator,SampleProject"
     for lane in lanes:
         for bnid in run_config['Lanes'][lane]:
             # submitter must not contain any spaces
@@ -113,15 +113,15 @@ def generate_support_files(run_config=None, config=None, lanes=None, path=None):
             if barcode_name == 'null':
                 barcode_name = ''
                 barcode_seq = ''
-            print >>sample_sheet, ','.join([flowcell_id, lane, bnid, '', barcode_seq,
-                                            barcode_name, 'N', 'R1', 'tech', submitter])
+            print >> sample_sheet, ','.join([flowcell_id, lane, bnid, '', barcode_seq,
+                                             barcode_name, 'N', 'R1', 'tech', submitter])
 
     # build config.txt - describes which lanes will be processed
     analysis_type = 'sequence'
     if 'paired' in run_config['run_type']:
         analysis_type += '_pair'
     print "run_type {} analysis_type {}  lanes {}".format(run_config['run_type'], analysis_type, lanes)
-    print >>config_file, '{}:ANALYSIS {}'.format(
+    print >> config_file, '{}:ANALYSIS {}'.format(
         ''.join(str(x) for x in sorted(lanes)), analysis_type
     )
 
@@ -147,12 +147,12 @@ def bcl_to_fastq(run_config=None, config=None, barcode_len=None):
                                'configureBclToFastq.log.out'), 'w') as out, \
                 open(os.path.join(config['root_dir'], run_config['run_name'],
                                   'configureBclToFastq.log.err'), 'w') as err:
-            print >>out, "{}".format(cmd)
+            print >> out, "{}".format(cmd)
             proc = subprocess.Popen(cmd, stdout=out, stderr=err, shell=True)
             proc.communicate()
             exit_code = proc.returncode
             if exit_code > 0:
-                print >>sys.stderr, "ERROR [{}]: configureBclToFastq.pl command failed!!!\nExiting.".format(
+                print >> sys.stderr, "ERROR [{}]: configureBclToFastq.pl command failed!!!\nExiting.".format(
                     exit_code
                 )
                 server_name = get_hostname()
@@ -167,7 +167,7 @@ def bcl_to_fastq(run_config=None, config=None, barcode_len=None):
                                   subject=subj, content=content)
                 sys.exit(1)
     except:
-        print >>sys.stderr, "ERROR: unable to run configureBclToFastq.  Exiting."
+        print >> sys.stderr, "ERROR: unable to run configureBclToFastq.  Exiting."
         raise
 
     os.chdir('Data/Intensities/BaseCalls/Unaligned')
@@ -177,7 +177,7 @@ def bcl_to_fastq(run_config=None, config=None, barcode_len=None):
             proc.communicate()
             exit_code = proc.wait()
             if exit_code > 0:
-                print >>sys.stderr, "ERROR: make command failed!!!\nExiting."
+                print >> sys.stderr, "ERROR: make command failed!!!\nExiting."
                 server_name = get_hostname()
                 subj = "Error processing {} : {}".format(server_name, run_config['run_name'])
                 content = "Server: {}\nRun name: {}\n Error running 'make'".format(
@@ -190,13 +190,13 @@ def bcl_to_fastq(run_config=None, config=None, barcode_len=None):
                                   subject=subj, content=content)
                 sys.exit(1)
     except:
-        print >>sys.stderr, "ERROR: unable to run 'make' ({})".format(run_config['run_name'])
+        print >> sys.stderr, "ERROR: unable to run 'make' ({})".format(run_config['run_name'])
         raise
     os.chdir('..')
     try:
         os.rename('Unaligned', 'Unaligned' + str(barcode_len))  # in case multiple demux cycles are required
     except OSError:
-        print >>sys.stderr, "Warning! moving Unaligned{} directory to Unaligned{}.old".format(
+        print >> sys.stderr, "Warning! moving Unaligned{} directory to Unaligned{}.old".format(
             str(barcode_len), str(barcode_len)
         )
         os.rename('Unaligned' + str(barcode_len), 'old.Unaligned' + str(barcode_len))
@@ -231,7 +231,7 @@ def link_files(run_config=None):
                 lane=m.group('lane'), end=m.group('end')
             )
         else:
-            print >>sys.stderr, "ERROR: unable to create symlink from {}".format(f)
+            print >> sys.stderr, "ERROR: unable to create symlink from {}".format(f)
             raise ValueError
         print "linking {} -> {}".format(f, new_filename)
         try:
@@ -357,9 +357,9 @@ def process_run(run_config=None, config=None):
     post_demultiplex_files(config=config, run_name=run_config['run_name'])
     subj = 'Preprocessing complete: {}'.format(run_config['run_name'])
     message = '''
-Preprocessing complete for run: {}
-Server: {}
-'''
+    Preprocessing complete for run: {}
+    Server: {}
+    '''
     message = message.format(run_config['run_name'], socket.gethostname())
     emailer.send_mail(api_key=config['email']['EMAIL_HOST_PASSWORD'],
                       to=config['addresses']['to'], cc=config['addresses']['cc'],
