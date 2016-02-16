@@ -4,6 +4,7 @@ import json
 import os
 import socket
 import requests
+import time
 
 from HGAC_run_monitor import parse_config
 from util import emailer
@@ -16,9 +17,13 @@ class Releaser:
     def __init__(self, config_file=None):
         self.config = parse_config(config_file=config_file)
 
+        def date_time():
+            cur = ">" + time.strftime("%c") + '\n'
+            return cur
+
     def go(self):
         completed_run_names = set(self.find_completed())
-        print "Completed: "
+        print self.date_time() + "Completed: "
         print completed_run_names
         released_run_names = set(self.find_released())
         print "Released: "
