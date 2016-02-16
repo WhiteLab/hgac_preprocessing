@@ -17,9 +17,9 @@ class Releaser:
     def __init__(self, config_file=None):
         self.config = parse_config(config_file=config_file)
 
-        def date_time():
-            cur = ">" + time.strftime("%c") + '\n'
-            return cur
+    def date_time(self):
+        cur = ">" + time.strftime("%c") + '\n'
+        return cur
 
     def go(self):
         completed_run_names = set(self.find_completed())
